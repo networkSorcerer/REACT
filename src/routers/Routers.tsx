@@ -3,6 +3,7 @@ import { Login } from '../pages/Login';
 import { DashBoard } from '../component/layout/DashBoard/DashBoard';
 import { NotFound } from '../component/common/NotFound/NotFound';
 import { Notice } from '../pages/Notice'; 
+import {Notice2} from '../pages/Notice2';
 const routers: RouteObject[] = [
     { path: '*', element: <NotFound /> },
     { path: '/', element: <Login /> },
@@ -15,9 +16,18 @@ const routers: RouteObject[] = [
                     {
                         path : 'notice.do',
                          element: <Notice />
-                        }
-                    ]
-                }
+                    }
+                ]
+            },
+            {
+                path : 'system',
+                children : [
+                    {
+                        path : 'notice.do',
+                        element: <Notice2/>
+                    }
+                ]
+            }
         ],
     },
 ];

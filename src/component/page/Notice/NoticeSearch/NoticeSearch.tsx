@@ -2,12 +2,15 @@ import { useRef, useState } from "react";
 import { Button } from "../../../common/Button/Button";
 import { NoticeSearchStyled } from "./styled"
 import { useNavigate } from "react-router-dom";
+import { useRecoilState } from "recoil";
+import { modalState } from "../../../../stores/modalState";
 
 export const NoticeSearch = () => {
     const [startDate, setStartDate] = useState<string>(); //useState같은 경우는 값이 바뀔때 마다 rendering이 된다 
     const [endDate, setEndDate] = useState<string>();
     const title = useRef<HTMLInputElement>(null); // useRef는 필요할때만 rendering이 된다 
-    const navigete = useNavigate();
+    const navigate = useNavigate();
+    const [modal, setModal] = useRecoilState<boolean>(modalState);
 
     const handlerSearch = () => {
         //검색 버튼을 누르면 , 조회가 된다 .
@@ -20,11 +23,15 @@ export const NoticeSearch = () => {
         !endDate || query.push(`endDate =${endDate}`);
 
         const queryString = query.length > 0 ? `?${query.join('&')}` : '';
-        navigete(`/react/board/notice.do${queryString}`);
+        navigate(`/react/board/notice.do${queryString}`);
 
         console.log(startDate, endDate);
         console.log(title.current?.value);
     };
+
+    const handlerModal = () =>{
+        setModal(!modal);
+    }
 
 
     return (
@@ -34,9 +41,12 @@ export const NoticeSearch = () => {
                 <input type="date" onChange={(e) => setStartDate(e.target.value)}></input>
                 <input type="date" onChange={(e) => setEndDate(e.target.value)}></input>
             <Button onClick={handlerSearch}>검색</Button>
-            <Button onClick={handlerSearch}>등록</Button>
+            <Button onClick={handlerModal}>등록</Button>
+            
             </NoticeSearchStyled>
             
         </>
     );
 };
+
+//생성 변경 제거의 라이프 사이클 
