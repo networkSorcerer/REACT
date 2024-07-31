@@ -2,6 +2,8 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NoticeSearchStyled } from "../../Notice/NoticeSearch/styled";
 import { Button } from "../../../common/Button/Button";
+import { useRecoilState } from "recoil";
+import { modalState } from "../../../../stores/modalState";
 
 export const NoticeSearch = () => {
 
@@ -9,6 +11,7 @@ export const NoticeSearch = () => {
     const [endDate, setEndDate] = useState<string>();
     const title = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+    const [modal, setModal] = useRecoilState<boolean>(modalState);
 
     const handlerSearch = () => {
         const query : string[] =[];
@@ -20,6 +23,9 @@ export const NoticeSearch = () => {
         const queryString = query.length > 0 ? `?${query.join('&')}` :'';
         navigate(`/react/board/notice.do${queryString}`);
 
+    }
+    const handlerModal= () =>{
+        setModal(!modal);
     }
     return (
     <>
