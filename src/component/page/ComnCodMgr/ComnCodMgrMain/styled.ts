@@ -1,7 +1,7 @@
 
 import styled from 'styled-components';
 
-export const ComnCodMainStyled = styled.div`
+export const ComnCodMgrMainStyled = styled.div`
 display: contents;
     Button {
         float: right;

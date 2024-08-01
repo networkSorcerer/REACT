@@ -5,6 +5,7 @@ import { NotFound } from '../component/common/NotFound/NotFound';
 import { Notice } from '../pages/Notice'; 
 import {Notice2} from '../pages/Notice2';
 import {ComnCodMgr} from '../pages/ComnCodMgr';
+import { ComnCodeMgrDetailMain } from '../component/page/ComnCodMgr/ComnCodMgrDetailMain/ComnCodeMgrDetailMain';
 
 const routers: RouteObject[] = [
     { path: '*', element: <NotFound /> },
@@ -31,6 +32,10 @@ const routers: RouteObject[] = [
                     {
                         path : 'comnCodMgr.do',
                         element: <ComnCodMgr/>
+                    },
+                    {
+                        path : 'comnCodMgr.do/:grpCod',
+                        element: <ComnCodeMgrDetailMain/>
                     }
                 ]
             }
