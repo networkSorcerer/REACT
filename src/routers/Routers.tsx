@@ -34,7 +34,8 @@ const routers: RouteObject[] = [
                         element: <ComnCodMgr/>
                     },
                     {
-                        path : 'comnCodMgr.do/:grpCod',
+                        path : 'comnCodMgr.do/:grpCod',//dynamic router 동적 라우터 연결 : 재사용성 증가 , 
+                        //불필요한 렌더링 발생 가능, 보안 취약
                         element: <ComnCodeMgrDetailMain/>
                     }
                 ]
