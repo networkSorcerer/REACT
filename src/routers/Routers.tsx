@@ -6,6 +6,9 @@ import { Notice } from '../pages/Notice';
 import {Notice2} from '../pages/Notice2';
 import {ComnCodMgr} from '../pages/ComnCodMgr';
 import { ComnCodeMgrDetailMain } from '../component/page/ComnCodMgr/ComnCodMgrDetailMain/ComnCodeMgrDetailMain';
+import { Supply } from '../pages/Supply';
+import { Product } from '../pages/Product';
+import { Warehouse } from '../pages/Warehouse';
 
 const routers: RouteObject[] = [
     { path: '*', element: <NotFound /> },
@@ -19,6 +22,23 @@ const routers: RouteObject[] = [
                     {
                         path : 'notice.do',
                          element: <Notice />
+                    }
+                ]
+            },
+            {
+                path: 'management',
+                children : [
+                    {
+                        path : 'supplyInfo.do',
+                        element: <Supply/>
+                    },
+                    {
+                        path : 'productInfo.do',
+                        element: <Product/>
+                    },
+                    {
+                        path : 'warehouseInfo.do',
+                        element: <Warehouse/>
                     }
                 ]
             },
