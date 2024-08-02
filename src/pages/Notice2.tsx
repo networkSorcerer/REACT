@@ -11,6 +11,8 @@ export const Notice2 = () => {
             <ContentBox>공지사항</ContentBox>
             <NoticeMain></NoticeMain>
             <NoticeSearch></NoticeSearch>
+           
+            <ComnCodMgr2></ComnCodMgr2>
         </>
        
     )
