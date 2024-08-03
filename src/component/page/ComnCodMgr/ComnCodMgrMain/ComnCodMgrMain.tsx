@@ -135,9 +135,7 @@ export const ComnCodMgrMain = () => {
                             );
                         })
                     ) : (
-                        <tr>
-                            <StyledTd colSpan={6}>데이터가 없습니다.</StyledTd>
-                        </tr>
+                        
                     )}
                 </tbody>
             </StyledTable>
