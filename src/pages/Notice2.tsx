@@ -8,10 +8,10 @@ import { ComnCodMgr2 } from "./ComnCodMgr2"
 export const Notice2 = () => {
     return (
         <>
-            <ContentBox>공지사항</ContentBox>
-            <NoticeMain></NoticeMain>
+            {/* <ContentBox>공지사항</ContentBox>
             <NoticeSearch></NoticeSearch>
-           
+            <NoticeMain></NoticeMain> */}
+
             <ComnCodMgr2></ComnCodMgr2>
         </>
        
