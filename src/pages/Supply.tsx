@@ -32,7 +32,6 @@ export const Supply = () =>{
                 <ContentBox>납품업체</ContentBox>
                 <SupplySearch></SupplySearch>
                 <SupplyMain></SupplyMain>
-               
             </SupplyProvider>
         </>
     )

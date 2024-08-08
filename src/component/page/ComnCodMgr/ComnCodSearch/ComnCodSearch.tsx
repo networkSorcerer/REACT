@@ -3,6 +3,7 @@ import { Button } from '../../../common/Button/Button';
 import { ComnCodSearchStyled } from './styled';
 import { ConmCodContext } from '../../../../api/provider/ComnCodMgrProvider';
 
+
 export const ComnCodSearch = () => {
     const { setSearchKeyword } = useContext(ConmCodContext);
     const [input, setInput] = useState<{
@@ -15,6 +16,7 @@ export const ComnCodSearch = () => {
 
     const handlerSearch = () => {
         setSearchKeyword(input);
+        console.log("검색 기능 정보 : ",input )
     };
     return (
         <ComnCodSearchStyled>

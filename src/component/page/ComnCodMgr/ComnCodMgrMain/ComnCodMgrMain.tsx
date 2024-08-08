@@ -43,6 +43,8 @@ export const ComnCodMgrMain = () => {
         searchComnCod();
     }, [searchKeyword]);
 
+  
+
     const searchComnCod = (cpage?: number) => {
         cpage = cpage || 1;
         // axios.post('/system/listComnGrpCodJson.do', { currentPage: cpage, pageSize: 5 });

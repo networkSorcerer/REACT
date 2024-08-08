@@ -9,6 +9,7 @@ import { ComnCodeMgrDetailMain } from '../component/page/ComnCodMgr/ComnCodMgrDe
 import { Supply } from '../pages/Supply';
 import { Product } from '../pages/Product';
 import { Warehouse } from '../pages/Warehouse';
+import { SupplyDetail } from '../component/page/Supply/SupplyDetail/SupplyDetail';
 
 const routers: RouteObject[] = [
     { path: '*', element: <NotFound /> },
@@ -31,6 +32,10 @@ const routers: RouteObject[] = [
                     {
                         path : 'supplyInfo.do',
                         element: <Supply/>
+                    },
+                    {
+                        path : 'supplyInfo.do/:cust_id',
+                        element: <SupplyDetail></SupplyDetail>
                     },
                     {
                         path : 'productInfo.do',

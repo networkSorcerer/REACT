@@ -9,7 +9,7 @@ import { Button } from "../../../common/Button/Button";
 import { StyledTable, StyledTd, StyledTh } from "../../../common/styled/StyledTable";
 import { PageNavigate } from "../../../common/pageNavigation/PageNavigate";
 import { SupplyModal } from "../SupplyModal/SupplyModal";
-import { SupplyContext } from "../../../../api/provider/SupplyProvider";
+import { SupplyContext } from "../../../../pages/Supply";
 
 export interface ISupplyList {
     cust_id: number;
@@ -38,7 +38,6 @@ export const SupplyMain = () => {
     useEffect(()=>{
         searchSupply();
     },[searchKeyword]);
-
      // /management/supplyList.do 납품업체 리스트 출력
     // /management/custProduct.do 납품업체 클릭했을 때 납품업체가 제공하는 제품 리스트 출력
     // /management/supplySearch.do 검색기능을 구현하는 API가 따로 존재함 ???? 그냥 이걸로 호출해도 상관은 없을 듯 
@@ -66,13 +65,12 @@ export const SupplyMain = () => {
             },
         };
 
-     
         axios(postAction).then((res : AxiosResponse<ISearchSupply>)=>{
             setSupplyList(res.data.supplyList);
             setTotalCnt(res.data.supplyCnt);
             setCurrentPage(cpage);
         });
-        console.log("자꾸 데이터를 못넘겨주네 ",param);
+       
     }
 
     const onPostSuccess = () =>{
@@ -140,7 +138,7 @@ export const SupplyMain = () => {
                         })
                     ) : (
                         <tr>
-                            <StyledTd>데이터가</StyledTd>
+                            <StyledTd  colSpan={6}>데이터가 없습니다</StyledTd>
                         </tr>
                     )}
                 </tbody>
@@ -154,7 +152,7 @@ export const SupplyMain = () => {
             itemsCountPerPage={5}
             activePage={currentPage as number}
             ></PageNavigate>
-            {/* <SupplyModal onPostSuccess={onPostSuccess} cust_id={cust_id} setCust_id={setCust_id}></SupplyModal> */}
+            <SupplyModal onPostSuccess={onPostSuccess} cust_id={cust_id} setCust_id={setCust_id}></SupplyModal>
         </SupplyMainStyled>
     </>
     )
