@@ -106,29 +106,13 @@ export const SupplyDetailModal: FC<SupplyDetailModalProps> = ({ setItem_code,ite
         return requiredFields.every(field => itemDetail[field as keyof ISupplyDetailModel] !== undefined && itemDetail[field as keyof ISupplyDetailModel] !== '');
     }
 
-
+     //1. 첫번째 API안에 두번째 API넣기 
+       //---> 두번째 작동안함
+       //2. 첫번째 API안에 함수를 넣고 API실행되는지 보기 
+       //----> 두번째 작동안함 
+       //그냥 xml에 insert를 2개 넣으면 됨 
     const handlerSave = async() =>{//더블 API타기
-        //더블 API 위험한거 같다 
-        //둘다 같이 되어야 하는데 하나는 되고 하나는 안되고 DB가.... 점점 ... 연습용이긴 하지만 안전한 방법 없나? ....
-
-        //약간 DB구조가 이상한게 맞지 않을까...
-        //cust면 고객? order 테이블도 있고 외래키로 연결되어있네 ...
-        //그냥 cust 테이블이 연습용인건가 
-        //cust_id와 연계가 안되면 supplyDetail에서 item 정보를 가져오지 못함 
-        //tb_company_item에 안들어가도 cust_id 와 연계되어서 Item 정보가 나올수 있도록 ......
-        // INSERT INTO tb_order_company (company_seq, company_name)
-        // SELECT cust_id, cust_name
-        // FROM tb_cust_info
-        // ON DUPLICATE KEY UPDATE
-        // company_name = VALUES(company_name);
-        //INSERT INTO tb_order_company (company_seq, company_name)
-        //SELECT cust_id, cust_name
-        //FROM tb_cust_info;
-
-        // DB 폭파되기전에 물어보고 할 것 .
-        // 필수 입력 필드 목록
-        // itemDetail 객체의 유효성을 검사
-        //조회만 되는 페이지가 많은게 ..... 외래성 제약이 엄청 얽혀있어서 힘드네 .....
+      
         if (!areFieldsValid(itemDetail)) {
             alert('모든 제품 정보를 입력하세요.');
             return;
@@ -146,7 +130,10 @@ export const SupplyDetailModal: FC<SupplyDetailModalProps> = ({ setItem_code,ite
             },
         };
         axios(postAciton).then((res : AxiosResponse<ISupplyDetailResponse>)=>{
-
+            if(res.data.resultMsg === "SUCCESS"){
+                alert("SUCCESS");
+               
+            }
         });
         const postAciton1 : AxiosRequestConfig = {
             method : 'POST',
@@ -165,6 +152,7 @@ export const SupplyDetailModal: FC<SupplyDetailModalProps> = ({ setItem_code,ite
         });
     }
 
+    
     const handlerDelete = () =>{
         const postAciton : AxiosRequestConfig ={
             method : 'POST',

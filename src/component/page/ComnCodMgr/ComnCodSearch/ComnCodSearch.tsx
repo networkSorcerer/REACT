@@ -5,7 +5,7 @@ import { ConmCodContext } from '../../../../api/provider/ComnCodMgrProvider';
 
 
 export const ComnCodSearch = () => {
-    const { setSearchKeyword } = useContext(ConmCodContext);
+    const { setSearchKeyword } = useContext(ConmCodContext);//전역변수 
     const [input, setInput] = useState<{
         oname: string;
         sname: string;

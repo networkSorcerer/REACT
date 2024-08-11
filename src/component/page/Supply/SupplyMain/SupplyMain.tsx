@@ -32,33 +32,20 @@ export const SupplyMain = () => {
     const [currentPage, setCurrentPage] = useState<number>();
     const [modal, setModal] = useRecoilState(modalState);
     const [cust_id, setCust_id] = useState<number>(0);
-  
+    const [password, setPassword] = useState<string>('');
+
     const navigate = useNavigate();
 
     useEffect(()=>{
         searchSupply();
     },[searchKeyword]);
-     // /management/supplyList.do 납품업체 리스트 출력
-    // /management/custProduct.do 납품업체 클릭했을 때 납품업체가 제공하는 제품 리스트 출력
-    // /management/supplySearch.do 검색기능을 구현하는 API가 따로 존재함 ???? 그냥 이걸로 호출해도 상관은 없을 듯 
+    
     const searchSupply = (cpage?:number) =>{
         cpage = cpage || 1;
         const param = {...searchKeyword, currentPage : cpage, pageSize: 5}
         const postAction : AxiosRequestConfig = {
             method : 'POST',
-            url : '/management/supplyList1.do',//기존의 백단에서 json으로 바꾸지 않고 @RequestParam을 RequestBody로 바꾸니까 응답이 온다 
-            //근데 json 형태로 바꿔야 할듯 ..... comnCod 백단 확인
-            //json 변형후 currentPage등을 인식하지 못함 
-            //@RequestParam을 @RequestBody로 하니까 인식함 
-            //JSON 데이터 전송:
-            //searchSupply 함수에서 param 객체를 JSON 형태로 전송하고 있습니다. 
-            //이 경우, 백엔드에서 JSON 형태의 요청 본문을 처리해야 합니다. 
-            //@RequestParam은 쿼리 파라미터나 폼 데이터를 처리하는 데 적합하지만, 
-            //JSON 데이터를 처리하기에는 적절하지 않습니다.
-
-            //@RequestBody 사용:
-            //@RequestBody를 사용하면 JSON 형태의 요청 본문을 Java 객체로 직접 매핑할 수 있습니다. 
-            //따라서 클라이언트에서 JSON 형식으로 데이터를 보내면, 백엔드에서 이를 @RequestBody를 통해 손쉽게 처리할 수 있습니다.
+            url : '/management/supplyList1.do',
             data : param,
             headers : {
                 'Content-Type' : 'application/json',
@@ -83,12 +70,19 @@ export const SupplyMain = () => {
         setCust_id(cust_id);
         setModal(!modal);
     };
+
+    const passwordCheck =(password: string, e:React.MouseEvent<HTMLElement, MouseEvent>) =>{
+        e.stopPropagation();
+        setPassword(password);
+        alert(password);
+    }
     return (
     <>
         <SupplyMainStyled>
             <Button
             onClick={() =>{
-                setModal(!modal);
+                setModal(!modal);////이 방식은 **익명 함수(Anonymous Function)**를 사용합니다. 
+                //클릭 이벤트가 발생하면, 그 즉시 함수가 생성되어 실행됩니다.
             }}>
                 신규등록
             </Button>
@@ -122,15 +116,21 @@ export const SupplyMain = () => {
                                 }}
                                 >
                                 <StyledTd>{a.cust_name}</StyledTd>
-                                <StyledTd>{a.loginID}</StyledTd>   
-                                <StyledTd>{a.password}</StyledTd>   
+                                <StyledTd>{a.loginID ? a.loginID  : "미등록"}</StyledTd>   
+                                <StyledTd>
+                                    {a.password ? 
+                                    <a onClick={(e) =>{passwordCheck(a.password ,e);}} 
+                                        style={{color : 'red'}}
+                                        >확인</a> : "미등록"}
+                                </StyledTd>   
                                 <StyledTd>{a.cust_person}</StyledTd>   
                                 <StyledTd>{a.cust_person_ph}</StyledTd>   
                                 <StyledTd>
                                 <a 
                                     onClick={(e) => {
                                         handlerModal(a.cust_id, e);
-                                    }}
+                                    }}//클릭 이벤트가 발생했을 때 handlerModal이라는 함수를 호출하는데, 
+                                    //이 함수에 두 개의 인자, a.cust_id와 e,를 전달합니다.
                                     >수정</a>     
                                 </StyledTd>
                                 </tr>

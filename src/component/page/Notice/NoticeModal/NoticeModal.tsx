@@ -89,6 +89,8 @@ export const NoticeModal: FC<INoticeModalProps> = ({ noticeSeq, onSuccess, setNo
         };
         if (fileData) fileForm.append('file', fileData);
         fileForm.append('text', new Blob([JSON.stringify(textData)], { type: 'application/json' }));
+       // noticeSaveFileJson 
+      
         axios.post('/board/noticeFileSaveJson.do', fileForm).then((res: AxiosResponse<IPostResponse>) => {
             if (res.data.result === 'success') {
                 onSuccess();

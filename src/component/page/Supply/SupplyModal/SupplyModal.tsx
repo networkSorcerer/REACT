@@ -72,20 +72,20 @@ export const SupplyModal :FC<ISupplyDetailModalProps> = ({onPostSuccess, cust_id
                 onPostSuccess();
             }
         });
-        const postAction1 : AxiosRequestConfig ={
-            method: 'POST',
-            url : '/management/newOrderCompany.do',
-            data : {cust_id : supply.cust_id, cust_name : supply.cust_name},
-            headers : {
-                'Content-Type':'application/json',
-            },
-        };
-        axios(postAction1).then((res:AxiosResponse<IDetailResponse>)=>{
-            if(res.data.resultMsg === 'SUCCESS'){
-                alert("SUCCESS")
-                onPostSuccess();
-            }
-        })
+        // const postAction1 : AxiosRequestConfig ={
+        //     method: 'POST',
+        //     url : '/management/newOrderCompany.do',
+        //     data : {cust_id : supply.cust_id, cust_name : supply.cust_name},
+        //     headers : {
+        //         'Content-Type':'application/json',
+        //     },
+        // };
+        // axios(postAction1).then((res:AxiosResponse<IDetailResponse>)=>{
+        //     if(res.data.resultMsg === 'SUCCESS'){
+        //         alert("SUCCESS")
+        //         onPostSuccess();
+        //     }
+        // })
     };
 
     const handlerUpdate= () => {
@@ -144,7 +144,7 @@ export const SupplyModal :FC<ISupplyDetailModalProps> = ({onPostSuccess, cust_id
                                 onChange={(e) =>{
                                     setSupply({...supply, cust_id:  parseInt(e.target.value)});
                                 }}
-
+                                placeholder="자동 업데이트"
                                 defaultValue={supply?.cust_id || ''}
                                 readOnly
                                 ></input>
