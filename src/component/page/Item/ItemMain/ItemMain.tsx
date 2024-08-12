@@ -8,6 +8,7 @@ import { StyledTable, StyledTd, StyledTh } from "../../../common/styled/StyledTa
 import { PageNavigate } from "../../../common/pageNavigation/PageNavigate";
 import { Protal } from "../../../common/potal/Portal";
 import { ItemModal } from "../ItemModal/ItemModal";
+import { ItemCodeProvider } from "../../../../pages/Product";
 
 export interface IItemList {
     item_code : string;
@@ -100,11 +101,13 @@ export const ItemMain = () =>{
         ></PageNavigate>
         {modal ? (
             <Protal>
+             <ItemCodeProvider>
             <ItemModal 
                 itemCode={itemCode} 
                 onSuccess={postSuccess} 
                 setItemCode={setItemCode} 
             />
+            </ItemCodeProvider>
         </Protal>
         
         ) : null}

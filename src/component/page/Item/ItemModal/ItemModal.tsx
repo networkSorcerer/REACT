@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../../../stores/modalState";
 import axios, { AxiosResponse } from "axios";
@@ -6,7 +6,9 @@ import NoImage from '../../../../assets/noImage.jpg';
 import { ItemModalStyled } from "./styled";
 import { Button } from "../../../common/Button/Button";
 import { ItemCodeModal } from "../ItemCodeModal/ItemCodeModal";
-import { Protal } from "../../../common/potal/Portal";
+import {  ItemContext } from "../../../../pages/Product";
+import { ItemCodeSearch } from "../ItemCodeSearch/ItemCodeSearch";
+import {ItemCodeSearchProvider} from "../../../../api/provider/ItemCodeSearchProvider";
 
 export interface IItemModalProps {
     itemCode : string;
@@ -27,8 +29,7 @@ export interface IItemDetail {
 }
 
 
-export interface IItemDetailResponse {
-    //나중에 변수명? 확인
+export interface IItemDetailResponse {   
     itemDetail : IItemDetail;
     resultMsg : string;
 }
@@ -38,29 +39,45 @@ export interface IItemDetailResponse {
 export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCode}) =>{
     const [modal, setModal] = useRecoilState<boolean>(modalState);
     const [itemDetail, setItemDetail] = useState<IItemDetail>({});
-    const item_code = useRef<HTMLInputElement>(null);
+    const item_code_ref = useRef<HTMLInputElement>(null);
     const item_name = useRef<HTMLInputElement>(null);
     const manufac = useRef<HTMLInputElement>(null);
     const provide_value = useRef<HTMLInputElement>(null);
     const [imageUrl, setImageUrl] = useState<string>('noImage');
     const [fileData, setFileData] = useState<File>();
     const [isModalOpen, setIsModalOpen] = useState<boolean>();
-
-    useEffect(() =>{
-        if(itemCode) {
+    const {itemCodeContext} = useContext(ItemContext);
+    const cust_id_ref = useRef<HTMLInputElement>(null);
+    
+    useEffect(() => {
+        // 상태가 정의되었을 때 searchDetail 함수 호출
+        if (itemCode) {
             searchDetail();
-        }
-        return() =>{
-            setItemCode(undefined);
+            
         }
         
-    },[]);
+        // 클린업 함수
+        return () => {
+            setItemCode(undefined); // 상태 초기화
+        };
+    }, [itemCode]); // itemCode 변경 시 effect 실행
+
+    useEffect(() => {
+        // itemCodeContext가 변경될 때 input 요소의 값 업데이트
+        if (cust_id_ref.current) {
+            cust_id_ref.current.value = itemCodeContext;
+        }
+     
+        console.log('itemCodeContext updated:', itemCodeContext);
+    }, [itemCodeContext]); // itemCodeContext 변경 시 effect 실행
+
 
     const searchDetail = () =>{
-        axios.post('/management/', {itemCode}).then((res: AxiosResponse<IItemDetailResponse>)=>{
+       
+        axios.post('/management/itemDetail.do', {item_code : itemCode}).then((res: AxiosResponse<IItemDetailResponse>)=>{
             if(res.data.itemDetail) {
                 setItemDetail(res.data.itemDetail);
-                const fileExt = res.data.itemDetail.img_path;
+                const fileExt = res.data.itemDetail.item_stand;
                 if(fileExt === 'jpg' || fileExt === 'gif' || fileExt === 'png'){
                     setImageUrl(res.data.itemDetail.img_path || NoImage)
                 } else {
@@ -82,41 +99,56 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
     //거기서 선택을 하면 이전화면으로 돌아가면서 item_code가 선택된 화면이 나온다 
     //유효성 검사하는 거 공부해서 여기에도 넣어보자 
 
-    const requiredFields =  ['item_code', 'item_name', 'provide_value', 'manufac'];
+    //const requiredFields =  ['item_code', 'item_name', 'provide_value', 'manufac'];
 
-    const areFieldsValid= (itemDetail :IItemDetail) : boolean =>{
-        return requiredFields.every(a => itemDetail[a as keyof IItemDetail] !== undefined &&  itemDetail[a as keyof IItemDetail] !=='');
-    }
+    //const areFieldsValid= (itemDetail :IItemDetail) : boolean =>{
+        //return requiredFields.every(a => itemDetail[a as keyof IItemDetail] !== undefined &&  itemDetail[a as keyof IItemDetail] !=='');
+   // }
 
-    const handlerSave = async() => {// 파일 저장 컬럼명은 상관없음 
+    const handlerSave = async() => {
+        // 파일 저장 컬럼명은 상관없음 
         //property쪽에서도 경로를 지정해줘야하함 
         //multipartfile을 사용함 
-        if(!areFieldsValid(itemDetail)){
-            alert('모든 제품 정보를 입력하세요.');
-            return;
-        }
+        //if(!areFieldsValid(itemDetail)){
+            //alert('모든 제품 정보를 입력하세요.');
+            //return;
+       // }
+        //tb_item_code랑 tb_company_item 에 같이 넣을려고 하는데 
+        //serviceImpl단에서 2개를 처리하면 된다고 하신다 
         const fileForm = new FormData();
+        const cust_id = cust_id_ref.current?.value;
+        const item_code= item_code_ref.current?.value;
         const textData = {
-            item_code: item_code.current?.value,
+            cust_id,
+            item_code,
             item_name: item_name.current?.value,
             manufac: manufac.current?.value,
             provide_value: provide_value.current?.value,
         };
+        
+        
+        const areAllFieldsValid = Object.values(textData).every(value => value !== null && value !== undefined && value !== '');
+
+
         if (fileData) fileForm.append('file', fileData);
         fileForm.append('text', new Blob([JSON.stringify(textData)], { type: 'application/json' }));
-    
-        axios.post('/management/ItemFileSaveJson', fileForm).then((res: AxiosResponse<IItemDetailResponse>) => {
-            if (res.data.resultMsg === 'SUCCESS') {
-                onSuccess();
-            }
-        });
+        if (areAllFieldsValid) {
+            axios.post('/management/ItemFileSaveJson', fileForm).then((res: AxiosResponse<IItemDetailResponse>) => {
+                if (res.data.resultMsg === 'SUCCESS') {
+                    onSuccess();
+                }
+            });
+           
+        } else {
+            alert('모든 내용을 작성하세요');
+        }
     }
     
     const handlerDelete = () =>{
 
     }
     const checkItemCode = () =>{
-        setModal(!modal);
+        setIsModalOpen(!isModalOpen);
     }
 
     
@@ -136,20 +168,37 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
     }
     return (
         <>
+       
             <ItemModalStyled>
                 <div className="container">
-                    <label>
-                        제품 코드: {itemCode ? (
-                            <input type="text" defaultValue={itemDetail?.item_code} ref={item_code} />
-                        ) : (
-                            <Button onClick={() => setIsModalOpen(true)}>제품코드 선택</Button>
-                        )}
-                    </label>
-    
+                     
+                    <div>
+                    {itemCodeContext ? <label>기업 코드 : <input type="text" ref={cust_id_ref}></input></label> : null}
+                    </div>
+                    <div>
+                    {itemCode ? (
+                           null
+                        ) 
+                        : 
+                        ( <Button onClick={() => checkItemCode()}>납품업체 선택</Button>)
+                    }
+                    
+                    </div>
+                    <div>
                     {isModalOpen ? (
-                        <ItemCodeModal />
+                        <>
+                        <ItemCodeSearchProvider>
+                            <ItemCodeSearch/>
+                            <ItemCodeModal />
+                            
+                        </ItemCodeSearchProvider>
+                       
+                        </>
                     ) : (
                         <>
+                            <label>
+                                제품 코드: <input type="text" defaultValue={itemDetail?.item_code} ref={item_code_ref} />
+                            </label>
                             <label>
                                 제품 명: <input type="text" defaultValue={itemDetail?.item_name} ref={item_name} />
                             </label>
@@ -184,9 +233,11 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
                             </div>
                         </>
                     )}
+                    </div>
                     <button onClick={() => setModal(!modal)}>나가기</button>
                 </div>
             </ItemModalStyled>
+            
         </>
     )
 }    

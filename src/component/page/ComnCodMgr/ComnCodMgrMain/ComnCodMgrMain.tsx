@@ -44,7 +44,11 @@ export const ComnCodMgrMain = () => {
     }, [searchKeyword]);
 
   
-
+    //ceateContext로 전역변수 사용해보기
+    //provider 개념으로 설정을 해준것을 컴포넌트로 감싸고 
+    //정보를 담는곳에서는 set을쓰고 
+    //API를 넘겨주는 곳에서는 변수명을 써서 data를 넘겨준다 
+    //아...  
     const searchComnCod = (cpage?: number) => {
         cpage = cpage || 1;
         // axios.post('/system/listComnGrpCodJson.do', { currentPage: cpage, pageSize: 5 });
