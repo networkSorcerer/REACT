@@ -31,14 +31,21 @@ export const ComnCodMgrMain = () => {
     const [comnCodList, setComnCodList] = useState<IComnCodList[]>();//useState는 상태 변수와 그 상태를 업데이트 할수 있는 함수를 반환합니다
     const [totalCnt, setTotalCnt] = useState<number>(0);
     const [currentPage, setCurrentPage] = useState<number>();
+
     const { searchKeyword } = useContext(ConmCodContext); // React의 Context API를 사용하여 전역 상태나 값을 컴포넌트 트리에서 가져옵니다.
+
     //애플리케이션 전체에서 사용해야 하는 데이터나 설정을 한 곳에서 정의할 수 있습니다.
     //이 데이터를 하위 컴포넌트들이 필요할 때 어디에서든 접근할 수 있게 됩니다.
+
     const [modal, setModal] = useRecoilState(modalState);//Recoil 상태 관리를 위한 훅으로, Recoil 상태를 읽고 업데이트할 수 있습니다
+
 //     useContext: 주로 컴포넌트 트리에서 데이터를 전달하고 공유하는 데 사용됩니다. 간단한 전역 상태를 필요로 하는 경우 적합합니다.
 // Recoil: 복잡한 전역 상태를 관리하거나, 상태의 파생값을 계산하고 비동기 작업을 처리할 필요가 있을 때 유용합니다.
+
     const [grpCod, setGrpCod] = useState<string>('');
+
     const navigate = useNavigate();//React Router의 useNavigate 훅을 사용하여 프로그래밍적으로 페이지를 이동할 수 있습니다.
+
     useEffect(() => {//컴포넌트가 렌더링될 때 특정 작업을 수행하거나 상태가 변경될 때 작업을 수행합니다.
         searchComnCod();
     }, [searchKeyword]);
@@ -54,7 +61,7 @@ export const ComnCodMgrMain = () => {
         // axios.post('/system/listComnGrpCodJson.do', { currentPage: cpage, pageSize: 5 });
         const postAction: AxiosRequestConfig = {
             method: 'POST',
-            url: '/system/listComnGrpCodJson.do',
+            url: '/system/listComnGrpCodJson.do',//리스트로 정보를 전달함 
             data: { ...searchKeyword, currentPage: cpage, pageSize: 5 },
             headers: {
                 'Content-Type': 'application/json',

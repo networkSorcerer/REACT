@@ -37,7 +37,7 @@ export const ComnCodMgrModal: FC<IComnCodMgrModalProps> = ({ onPostSuccess, grpC
     const searchDetail = async (grpCod: string) => {
         const postAction: AxiosRequestConfig = {
             method: 'POST',
-            url: '/system/selectComnGrpCod.do',
+            url: '/system/selectComnGrpCod.do',//객체로 정보를 전달함 
             data: { grp_cod: grpCod },
             headers: {
                 'Content-Type': 'application/json',

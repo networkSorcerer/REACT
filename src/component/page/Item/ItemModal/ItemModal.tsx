@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, useContext, useEffect, useRef, useState } from "react";
+import { ChangeEvent, FC, RefObject, useContext, useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { modalState } from "../../../../stores/modalState";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import NoImage from '../../../../assets/noImage.jpg';
 import { ItemModalStyled } from "./styled";
 import { Button } from "../../../common/Button/Button";
@@ -39,7 +39,7 @@ export interface IItemDetailResponse {
 export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCode}) =>{
     const [modal, setModal] = useRecoilState<boolean>(modalState);
     const [itemDetail, setItemDetail] = useState<IItemDetail>({});
-    const item_code_ref = useRef<HTMLInputElement>(null);
+    const item_code = useRef<HTMLInputElement>(null);
     const item_name = useRef<HTMLInputElement>(null);
     const manufac = useRef<HTMLInputElement>(null);
     const provide_value = useRef<HTMLInputElement>(null);
@@ -48,7 +48,7 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
     const [isModalOpen, setIsModalOpen] = useState<boolean>();
     const {itemCodeContext} = useContext(ItemContext);
     const cust_id_ref = useRef<HTMLInputElement>(null);
-    
+    const [useAbleCode, setUseAbleCode] =useState<boolean>();
     useEffect(() => {
         // 상태가 정의되었을 때 searchDetail 함수 호출
         if (itemCode) {
@@ -71,7 +71,11 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
         console.log('itemCodeContext updated:', itemCodeContext);
     }, [itemCodeContext]); // itemCodeContext 변경 시 effect 실행
 
-
+    useEffect(() => {
+        if (item_code.current?.value.trim()) {
+            SameCode(item_code.current.value);
+        }
+    }, [item_code.current?.value]);
     const searchDetail = () =>{
        
         axios.post('/management/itemDetail.do', {item_code : itemCode}).then((res: AxiosResponse<IItemDetailResponse>)=>{
@@ -92,7 +96,20 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
 
     }
     const handlerUpdate = () =>{
-
+        const fileForm = new FormData();
+        const textData = {
+            item_code: itemCode,
+            item_name: item_name.current?.value,
+            manufac: manufac.current?.value,
+            provide_value: provide_value.current?.value,
+        };
+        if(fileData) fileForm.append('file', fileData);
+        fileForm.append('text', new Blob([JSON.stringify(textData)], {type: 'application/json'}));
+        axios.post('/management/ItemFileUpdateJson.do',fileForm).then((res:AxiosResponse<IItemDetailResponse>)=>{
+            if(res.data.resultMsg="SUCCESS"){
+                onSuccess();
+            }
+        })
     }
     //신규등록할때 제품코드를 먼저 선택하는데 제품 코드 선택 버튼을 누르면 작은 모달창에 
     //item_code를 선택할수 있는 페이징 되는 화면이 나온다 
@@ -116,11 +133,10 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
         //tb_item_code랑 tb_company_item 에 같이 넣을려고 하는데 
         //serviceImpl단에서 2개를 처리하면 된다고 하신다 
         const fileForm = new FormData();
-        const cust_id = cust_id_ref.current?.value;
-        const item_code= item_code_ref.current?.value;
+        const cust_id = cust_id_ref.current?.value;//더블 API하려다가 사실 필요없음 
         const textData = {
             cust_id,
-            item_code,
+            item_code: item_code.current?.value,
             item_name: item_name.current?.value,
             manufac: manufac.current?.value,
             provide_value: provide_value.current?.value,
@@ -166,6 +182,31 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
             setFileData(fileInfo[0]);
         }
     }
+
+    const SameCode = (item_code: string) => {
+        if (!item_code.trim()) {
+            return;
+        }
+        
+        const postAction: AxiosRequestConfig = {
+            method: 'POST',
+            url: '/management/sameCode.do',
+            data: { item_code: item_code },//itemDetail 거의 만능임 특정 부분만 쓰고 싶으면 
+            //itemDetail.item_code 이런식으로 가져다 쓰면됨 단 배열이 아니라 객체로 정의 되어있어야함 
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+        axios(postAction).then((res: AxiosResponse<IItemDetailResponse>) => {
+            if (res.data.resultMsg === "SUCCESS") {     
+               setUseAbleCode(false);
+            } else {
+                setUseAbleCode(true);
+            }
+        });
+    }
+
+    
     return (
         <>
        
@@ -196,9 +237,21 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
                         </>
                     ) : (
                         <>
+                        {itemCode ? ( <label>
+                            제품 코드: <input type="text" 
+                            defaultValue={itemDetail?.item_code} 
+                            ref={item_code} 
+                            readOnly
+                            /> </label>
+                        ) :(
                             <label>
-                                제품 코드: <input type="text" defaultValue={itemDetail?.item_code} ref={item_code_ref} />
-                            </label>
+                            제품 코드: <input type="text" 
+                            defaultValue={itemDetail?.item_code} 
+                            ref={item_code} 
+                            onChange={()=>SameCode(item_code.current?.value || '')}//sameCode도 함수형 컴포넌트를 사용하면 적용될까? 
+                            /> </label>
+                            ) }
+                            {useAbleCode ? <a style={{color : 'green'}}>사용가능한 코드입니다</a > : <a style={{color : 'red'}}>사용할수 없는 코드입니다</a>}
                             <label>
                                 제품 명: <input type="text" defaultValue={itemDetail?.item_name} ref={item_name} />
                             </label>
@@ -206,8 +259,14 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
                                 제조사: <input type="text" defaultValue={itemDetail?.manufac} ref={manufac} />
                             </label>
                             <label>
-                                가격: <input type="text" defaultValue={itemDetail?.provide_value} ref={provide_value} />
-                            </label>
+                                가격: <input 
+                                type="number" 
+                                defaultValue={itemDetail?.provide_value} 
+                                ref={provide_value} 
+                                step="any" // 숫자 입력을 위한 추가 옵션
+                                />
+                                </label>
+
                             파일: <input type="file" id="fileInput" style={{ display: 'none' }} onChange={handlerFile} />
                             <label className="img-label" htmlFor="fileInput">
                                 파일 첨부하기
