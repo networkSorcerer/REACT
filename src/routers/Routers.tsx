@@ -10,6 +10,7 @@ import { Supply } from '../pages/Supply';
 import { Product } from '../pages/Product';
 import { Warehouse } from '../pages/Warehouse';
 import { SupplyDetail } from '../component/page/Supply/SupplyDetail/SupplyDetail';
+import { StorageDetailMain } from '../component/page/Storage/StorageDetailMain/StorageDetailMain';
 
 const routers: RouteObject[] = [
     { path: '*', element: <NotFound /> },
@@ -44,6 +45,10 @@ const routers: RouteObject[] = [
                     {
                         path : 'warehouseInfo.do',
                         element: <Warehouse/>
+                    },
+                    {
+                        path : 'warehouseInfo.do/:storage_code',
+                        element : <StorageDetailMain/>
                     }
                 ]
             },

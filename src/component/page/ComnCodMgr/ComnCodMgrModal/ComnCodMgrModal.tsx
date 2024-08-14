@@ -124,7 +124,7 @@ export const ComnCodMgrModal: FC<IComnCodMgrModalProps> = ({ onPostSuccess, grpC
                                         setComnCod({ ...comnCod, grp_cod: e.target.value });//comnCod배열을 재정의 한다 
                                     }}
                                     defaultValue={comnCod?.grp_cod || ''}
-                                    readOnly={grpCod ? true : false}
+                                    readOnly={grpCod ? true : false}//
                                 ></input>
                             </td>
                             <th>그룹 코드 명 *</th>

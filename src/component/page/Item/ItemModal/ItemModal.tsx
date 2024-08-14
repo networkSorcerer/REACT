@@ -49,6 +49,7 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
     const {itemCodeContext} = useContext(ItemContext);
     const cust_id_ref = useRef<HTMLInputElement>(null);
     const [useAbleCode, setUseAbleCode] =useState<boolean>();
+    
     useEffect(() => {
         // 상태가 정의되었을 때 searchDetail 함수 호출
         if (itemCode) {
@@ -76,6 +77,8 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
             SameCode(item_code.current.value);
         }
     }, [item_code.current?.value]);
+
+
     const searchDetail = () =>{
        
         axios.post('/management/itemDetail.do', {item_code : itemCode}).then((res: AxiosResponse<IItemDetailResponse>)=>{
@@ -241,7 +244,7 @@ export const ItemModal : FC<IItemModalProps> = ({itemCode, onSuccess, setItemCod
                             제품 코드: <input type="text" 
                             defaultValue={itemDetail?.item_code} 
                             ref={item_code} 
-                            readOnly
+                            readOnly// readOnly={grpCod ? true : false}// 이게 더 간단함 근데 밑에 함수가 하나 더 있네 
                             /> </label>
                         ) :(
                             <label>

@@ -85,6 +85,13 @@ export const StorageModal: FC<IStorageModalProps> = ({ onPostSuccess, storage_co
         setPostcode(data.zonecode);
         setAddress(fullAddress);
         setDetailAddress('');
+
+        setStorageDetail(prevState => ({
+            ...prevState,
+            storage_loc_num: Number(data.zonecode),
+            storage_loc: fullAddress,
+            storage_detail_loc: '' // 기본값으로 설정
+          }));
     };
 
     const handleClick = () => {
@@ -94,7 +101,43 @@ export const StorageModal: FC<IStorageModalProps> = ({ onPostSuccess, storage_co
         }).open();
     };
     
+    const handlerUpdate =()=>{
+        const postAction:AxiosRequestConfig ={
+            method : 'POST',
+            url : '/management/newStorageUpdate1.do',
+            data : storageDetail,
+            headers : {
+                'Content-Type':'application/json',
+            },
+        };
+        axios(postAction).then((res:AxiosResponse<IStorageDetailResponse>)=>{
+            if(res.data.resultMsg === "SUCCESS"){
+                alert("SUCCESS");
+                onPostSuccess();
+            }else {
+                alert("FAIL");
+            }
+        })
+    }
+    const handlerSave=()=>{
+        //newStorageSave
+        const postAction: AxiosRequestConfig={
+            method: 'POSt',
+            url : '/management/newStorageSave1.do',
+            data : storageDetail,
+            headers : {
+                'Content-Type':'application/json',
+            },
+        };
+        axios(postAction).then((res:AxiosResponse<IStorageDetailResponse>)=>{
+            if(res.data.resultMsg==="SUCCESS"){
+                onPostSuccess();
+            }
+        })
+    }
+    const handlerDelete =()=>{
 
+    }
      const cleanUp = () => {
         setStorageDetail({});
         setStorage_code('');
@@ -144,7 +187,7 @@ export const StorageModal: FC<IStorageModalProps> = ({ onPostSuccess, storage_co
                                     required
                                     onChange={(e) => {
                                         setStorageDetail({ ...storageDetail, storage_loc_num: Number(e.target.value) });
-                                    }}
+                                    }}//우편주소를 통해서 자동으로 추가된 부분은 인식을 못하는 오류가 있다 . 
                                     value={postcode ? postcode : storageDetail?.storage_loc_num?.toString() }
                                 />
                             </td>
@@ -183,6 +226,8 @@ export const StorageModal: FC<IStorageModalProps> = ({ onPostSuccess, storage_co
                     </tbody>
                 </StorageTableStyled>
                 <div className="btn-group">
+                    <Button onClick={storage_code ? handlerUpdate : handlerSave}>{storage_code ? '수정' : '저장'}</Button>
+                    {storage_code ? <Button onClick={handlerDelete}>삭제</Button> : null}
                     <Button onClick={() => setModal(!modal)}>닫기</Button>
                 </div>
             </div>

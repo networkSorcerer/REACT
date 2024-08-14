@@ -99,7 +99,7 @@ export const ComnCodeMgrDetailMain = () => {
                         })
                     ): (
                         <tr>
-                            <StyledTd colSpan={6}>데이터가 없습니다.</StyledTd>
+                            <StyledTd colSpan={5}>데이터가 없습니다.</StyledTd>
                         </tr>
                     )}
                         
