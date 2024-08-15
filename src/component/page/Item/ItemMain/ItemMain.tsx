@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom"
-import { useRecoilState } from "recoil";
+import { atom, useRecoilState } from "recoil";
 import { modalState } from "../../../../stores/modalState";
 import { ItemModalStyled } from "../ItemModal/styled";
 import { StyledTable, StyledTd, StyledTh } from "../../../common/styled/StyledTable";
@@ -9,6 +9,8 @@ import { PageNavigate } from "../../../common/pageNavigation/PageNavigate";
 import { Protal } from "../../../common/potal/Portal";
 import { ItemModal } from "../ItemModal/ItemModal";
 import { ItemCodeProvider } from "../../../../pages/Product";
+import { Button } from "../../../common/Button/Button";
+import { ItemStorage } from "../ItemStorage/ItemStorage";
 
 export interface IItemList {
     item_code : string;
@@ -27,11 +29,20 @@ export interface IItemListJsonResponse {
     productCnt : number;
 }
 
+
+
+
+export const modalState1 = atom<boolean>({
+    key : 'modalState1',
+    default : false,
+})
+
 export const ItemMain = () =>{
     const {search} =useLocation();
     const [productList , setProductList] = useState<IItemList[]>([]);
     const [productCnt, setProductCnt] =useState<number>(0);
     const [modal, setModal] = useRecoilState<boolean>(modalState);
+    const [modal1, setModal1] =useRecoilState<boolean>(modalState1);
     const [itemCode , setItemCode] = useState<string >('');
     const [currentParam, setCurrentParam] = useState<number | undefined>(1);
     useEffect(()=> {
@@ -62,6 +73,14 @@ export const ItemMain = () =>{
         setModal(!modal);
         searchItemList();
     }
+    //창고에 넣기 하려면 recoil 하나 더 만들어야 할듯 .....
+    //tb_inventory에 넣어야 할듯 이미 제품은 존재하니까 
+    //stroage_code , model_num , item_code , product_num , inventory_count
+    const handlerModal2 =(itemCode: string, e:React.MouseEvent<HTMLElement, MouseEvent>) =>{
+        e.stopPropagation();
+        setItemCode(itemCode || '');
+        setModal1(!modal1);
+    }
     return(
         <>
         총 갯수 : {productCnt} 현재 페이지 : {currentParam}
@@ -69,9 +88,11 @@ export const ItemMain = () =>{
             <thead>
                 <tr>
                     <StyledTh size={20}>제품 코드</StyledTh>
-                    <StyledTh size={50}>제품 명</StyledTh>
+                    <StyledTh size={40}>제품 명</StyledTh>
                     <StyledTh size={10}>제조사</StyledTh>
                     <StyledTh size={20}>가격</StyledTh>
+                    <StyledTh size={20}>창고에 넣기</StyledTh>
+                    
                 </tr>
             </thead>
             <tbody>
@@ -83,6 +104,9 @@ export const ItemMain = () =>{
                                 <StyledTd>{a.item_name}</StyledTd>
                                 <StyledTd>{a.manufac}</StyledTd>
                                 <StyledTd>{a.provide_value}</StyledTd>
+                                <StyledTd>
+                                    <a onClick={(e)=>handlerModal2(a.item_code, e)}>창고 선택</a>
+                                </StyledTd>
                         </tr>
                         );
                     })
@@ -111,6 +135,7 @@ export const ItemMain = () =>{
         </Protal>
         
         ) : null}
+        <ItemStorage itemCode={itemCode}></ItemStorage>
         </>
     )
 

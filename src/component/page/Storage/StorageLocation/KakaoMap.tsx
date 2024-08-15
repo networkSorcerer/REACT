@@ -1,57 +1,75 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
-interface KakaoMapProps {
-    center: { lat: number; lng: number }; // 중심 좌표
-    level?: number; // 지도의 확대 수준
-}
-const center = { lat: 37.5665, lng: 126.978 }; // 예시: 서울의 위도와 경도
-const KakaoMap: React.FC<KakaoMapProps> = ({ center, level = 3 }) => {
+const KAKAO_MAP_APP_KEY = 'd2a1da46b234959daf8cd1cb07af9452';
+
+export const KakaoMapComponent: React.FC = () => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
+    const [address, setAddress] = useState('서울시 강남구 논현로 552');
 
     useEffect(() => {
-        const initializeMap = () => {
-            if (mapContainerRef.current) {
-                const { kakao } = window;
-
-                // 지도의 옵션 설정
-                const mapOptions = {
-                    center: new kakao.maps.LatLng(center.lat, center.lng), // 중심 좌표
-                    level: level, // 확대 수준
-                };
-
-                // 지도를 생성합니다
-                const map = new kakao.maps.Map(mapContainerRef.current, mapOptions);
-
-                // 지도에 마커 추가 (선택 사항)
-                const marker = new kakao.maps.Marker({
-                    position: new kakao.maps.LatLng(center.lat, center.lng),
-                });
-                marker.setMap(map);
+        const script = document.createElement('script');
+        script.src = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${KAKAO_MAP_APP_KEY}&libraries=services`;
+        script.async = true;
+        script.onload = () => {
+            if (window.kakao && mapContainerRef.current) {
+                initializeMap();  
             }
         };
+        document.body.appendChild(script);
 
-        // 카카오 맵 API 스크립트가 이미 로드되었는지 확인
-        if (!window.kakao || !window.kakao.maps) {
-            // 스크립트 동적 추가
-            const script = document.createElement('script');
-            script.src = 'https://dapi.kakao.com/v2/maps/sdk.js?appkey=d2a1da46b234959daf8cd1cb07af9452'; // 자신의 APP_KEY로 교체
-            script.async = true;
-            script.onload = initializeMap;
-            document.body.appendChild(script);
-        } else {
-            initializeMap();
-        }
-
-        // Cleanup 함수: 스크립트 제거
         return () => {
-            const script = document.querySelector(`script[src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=d2a1da46b234959daf8cd1cb07af9452"]`);
-            if (script) {
-                document.body.removeChild(script);
+            const existingScript = document.querySelector(`script[src="${script.src}"]`);
+            if (existingScript) {
+                document.body.removeChild(existingScript);
             }
         };
-    }, [center, level]);
+    }, []);
 
-    return <div ref={mapContainerRef} style={{ width: '100%', height: '400px' }}></div>;
+    useEffect(() => {
+        if (window.kakao && mapContainerRef.current) {
+            initializeMap();  
+        }
+    }, [address]);  // 주소가 변경될 때마다 지도 업데이트
+
+    const initializeMap = () => {
+        const { kakao } = window;
+        const mapContainer = mapContainerRef.current;
+        const mapOption = {
+            center: new kakao.maps.LatLng(33.450701, 126.570667),
+            level: 3
+        };
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+        const geocoder = new kakao.maps.services.Geocoder();
+
+        geocoder.addressSearch(address, function (result: {y: any; x: any; }[], status: any) {
+            if (status === kakao.maps.services.Status.OK) {
+                const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                const marker = new kakao.maps.Marker({
+                    map: map,
+                    position: coords
+                });
+                const infowindow = new kakao.maps.InfoWindow({
+                    content: '<div style="width:150px;text-align:center;padding:6px 0;">우리회사</div>'
+                });
+                infowindow.open(map, marker);
+                map.setCenter(coords);
+            } else {
+                console.error("주소를 찾을 수 없습니다.");
+            }
+        });
+    };
+
+    return (
+        <div>
+            <input 
+                type="text" 
+                value={address} 
+                onChange={(e) => setAddress(e.target.value)} 
+                placeholder="주소를 입력하세요" 
+            />
+            <div ref={mapContainerRef} style={{ width: '100%', height: '350px', border: '1px solid black' }}></div>
+        </div>
+    );
 };
 
-export default KakaoMap;
+export default KakaoMapComponent;

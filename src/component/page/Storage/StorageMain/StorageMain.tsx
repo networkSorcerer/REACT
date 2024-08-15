@@ -21,6 +21,7 @@ export interface IStorageList {
 export interface IStorageResponse {
     totalCount : number;
     list : IStorageList[];
+    resultMsg : string;
 }
 
 export const StorageMain =()=>{
@@ -98,7 +99,7 @@ export const StorageMain =()=>{
                                     <tr
                                     key={a.storage_code}
                                     onClick={() => {
-                                        navigate(a.storage_code, { state: { storage_name: a.storage_name } });
+                                        navigate(a.storage_code, { state: { storage_code:a.storage_code, storage_name: a.storage_name } });
                                     }}
                                     >
                                     <StyledTd>{a.storage_code}</StyledTd>

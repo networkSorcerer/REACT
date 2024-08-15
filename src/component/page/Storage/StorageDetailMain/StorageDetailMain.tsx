@@ -1,12 +1,14 @@
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom"
+import { useLocation, useNavigate, useParams } from "react-router-dom"
 import { useRecoilState } from "recoil";
 import { modalState } from "../../../../stores/modalState";
 import { ContentBox } from "../../../common/ContentBox/ContentBox";
 import { Button } from "../../../common/Button/Button";
 import { StyledTable, StyledTd, StyledTh } from "../../../common/styled/StyledTable";
-import KakaoMap from "../StorageLocation/KakaoMap";
+import KakaoMapComponent from "../StorageLocation/KakaoMap";
+import { StorageDetailModal } from "../StorageDetailModal/StorageDetailModal";
+
 
 export interface IStorageItemList{
     storage_code : number;
@@ -28,7 +30,7 @@ export const StorageDetailMain =() =>{
     const [StorageItemList, setStorageItemList] = useState<IStorageItemList[]>();
     const [item_code, setItem_code] = useState<string>();
     const [modal, setModal] = useRecoilState(modalState);
-
+   
     useEffect(()=>{
         searchStorageItemList();
     },[storage_code]);
@@ -50,18 +52,18 @@ export const StorageDetailMain =() =>{
             setStorageItemList(res.data.map);
         })
     } //창고이름	상품이름	상품가격	상품개수
-   
+    const handlerModal =(item_code?: string)=>{
+        setModal(!modal);
+        setItem_code(item_code);
+    }
     return(
         <>
         <ContentBox>창고 제품 리스트</ContentBox>
         <Button onClick={()=> navigate(-1)}>뒤로가기</Button>
-        <Button >신규등록</Button>
-        <KakaoMap center={{
-                lat: 0,
-                lng: 0
-            }} ></KakaoMap>
+        <Button onClick={handlerModal}>창고에 상품 등록하기</Button>
+        
         <StyledTable>
-           
+        
             <thead>
                 <tr>
                 <StyledTh size={10}>창고이름</StyledTh>
@@ -74,7 +76,7 @@ export const StorageDetailMain =() =>{
                 {StorageItemList && StorageItemList.length > 0? (
                     StorageItemList.map((a)=>{
                         return(
-                            <tr key={a.storage_code}>
+                            <tr key={a.storage_code} onClick={() =>handlerModal(a.item_code)}>
                                 <StyledTd>{a.storage_name}</StyledTd>
                                 <StyledTd>{a.item_name}</StyledTd>
                                 <StyledTd>{a.item_price}</StyledTd>
@@ -89,6 +91,7 @@ export const StorageDetailMain =() =>{
                 )}
             </tbody>
         </StyledTable>
+        <StorageDetailModal onPostSuccess={onPostSuccess} item_code={item_code} ></StorageDetailModal>
         </>
     )
 }

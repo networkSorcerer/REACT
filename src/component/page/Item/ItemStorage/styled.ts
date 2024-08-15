@@ -1,7 +1,7 @@
 import ReactModal from "react-modal";
 import styled from "styled-components";
 
-export const StorageDetailModalStyled = styled(ReactModal)`
+export const ItemStorageModalStyled = styled(ReactModal)`
   width: 100%;
     height: 100%;
     display: flex;
@@ -45,7 +45,7 @@ export const StorageDetailModalStyled = styled(ReactModal)`
     }
 ;`
 
-export const StorageDetailModalTable = styled.table`
+export const ItemStorageTable = styled.table`
     border-collapse: collapse;
     margin-bottom: auto;
     th,

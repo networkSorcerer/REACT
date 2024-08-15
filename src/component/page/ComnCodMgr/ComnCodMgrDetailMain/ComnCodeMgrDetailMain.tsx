@@ -30,7 +30,7 @@ export interface IComnCodDetailList {
   }
   
 export const ComnCodeMgrDetailMain = () => {
-    const { grpCod } = useParams();
+    const { grpCod } = useParams();//메인에서 부터 계속 가져오네 ......
     const navigate = useNavigate();
     const [comnCodDetailList, setComnDetailList] = useState<IComnCodDetailList[]>();
     const [modal, setModal] = useRecoilState(modalState);
